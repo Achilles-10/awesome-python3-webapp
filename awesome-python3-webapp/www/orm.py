@@ -1,3 +1,5 @@
+__author__ = 'Achilles Zhang'
+
 import logging
 
 import asyncio, aiomysql
@@ -5,7 +7,6 @@ import asyncio, aiomysql
 
 def log(sql, args=()):
 	logging.info('SQL: %s' % sql)
-
 
 async def create_pool(loop, **kw):
 	logging.info('create database connecion pool...')
@@ -54,6 +55,12 @@ async def execute(sql, args):
 
 from orm import Model, StringField, IntegerField
 
+def create_args_strings(num):
+	L = []
+	for n in range(num):
+		L.append('?')
+	return ','.join(L)
+
 
 class User(Model):
 	__table__ = 'users'
@@ -88,7 +95,23 @@ class Model(dict, metaclass=ModelMetaclass):
 				logging.debug(
 						'using default value for %s: %s' % (key, str(value)))
 				setattr(self, key, value)
-			return value
+		return value
+
+	@classmethod
+	async def find(cls,pk):
+		'find object by primary key.'
+		rs = await select('%s where `%s`=?' % (cls.__select__,cls.__primary_key__),[pk],1)
+		if len(rs) == 0:
+			return None
+		return cls(**rs[0])
+
+	async def save(self):
+		args = list(map(self.getValueOrDefault,self.__fields__))
+		args.append(self.getValueOrDefault(self.__primary_key__))
+		rows = await execute(self.__insert__, args)
+		if rows != 1:
+			logging.warn('failed to insert record: affected rows: %s' % rows)
+
 
 
 class Field(object):
