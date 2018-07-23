@@ -4,9 +4,7 @@ __author__ = 'Achilles Zhang'
 async web application
 '''
 
-import logging;
-
-logging.basicConfig(level=logging.INFO)
+import logging; logging.basicConfig(level=logging.INFO)
 
 import asyncio, os, json, time
 
