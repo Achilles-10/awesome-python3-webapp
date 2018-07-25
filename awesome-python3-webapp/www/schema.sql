@@ -1,48 +1,52 @@
-drop database if exists awesome;
+DROP DATABASE IF EXISTS awesome;
 
-create database awesome;
+CREATE DATABASE awesome;
 
-use awesome;
+USE awesome;
 
-CREATE USER 'www.data'@'localhost' IDENTIFIED BY 'www-data';
+GRANT SELECT, INSERT, UPDATE, DELETE ON awesome.* TO 'www-data'@'localhost'
+IDENTIFIED BY 'www-data';
 
-grant select, insert, update, delete on awesome.* to 'www.data'@'localhost' with grant option;
+CREATE TABLE users (
+  `id`         VARCHAR(50)  NOT NULL,
+  `email`      VARCHAR(50)  NOT NULL,
+  `passwd`     VARCHAR(50)  NOT NULL,
+  `admin`      BOOL         NOT NULL,
+  `name`       VARCHAR(50)  NOT NULL,
+  `image`      VARCHAR(500) NOT NULL,
+  `created_at` REAL         NOT NULL,
+  UNIQUE KEY `idx_email` (`email`),
+  KEY `idx_created_at` (`created_at`),
+  PRIMARY KEY (`id`)
+)
+  ENGINE = innodb
+  DEFAULT CHARSET = utf8;
 
-create table users(
-    `id` varchar(50) not null,
-    `email` varchar(50) not null,
-    `password` varchar(50) not null,
-    `admin` bool not null,
-    `name` varchar(50) not null,
-    `image` varchar(500) not null,
-    `created_at` real not null,
-    unique key `idx_email` (`email`),
-    key `idx_created_at` (`created_at`),
-    primary key (`id`)
-) engine=innodb default charset=utf8;
+CREATE TABLE blogs (
+  `id`         VARCHAR(50)  NOT NULL,
+  `user_id`    VARCHAR(50)  NOT NULL,
+  `user_name`  VARCHAR(50)  NOT NULL,
+  `user_image` VARCHAR(500) NOT NULL,
+  `name`       VARCHAR(50)  NOT NULL,
+  `summary`    VARCHAR(200) NOT NULL,
+  `content`    MEDIUMTEXT   NOT NULL,
+  `created_at` REAL         NOT NULL,
+  KEY `idx_created_at` (`created_at`),
+  PRIMARY KEY (`id`)
+)
+  ENGINE = innodb
+  DEFAULT CHARSET = utf8;
 
-create table blogs(
-    `id` varchar(50) not null,
-    `user_id` varchar(50) not null,
-    `user_name` varchar(50) not null,
-    `user_image` varchar(500) not null,
-    `name` varchar(50) not null,
-    `summary` varchar(200) not null,
-    `content` mediumtext not null,
-    `created_at` real not null,
-    key `idx_created_at` (`created_at`),
-    primary key (`id`)
-) engine=innodb default charset=utf8;
-
-create table comments(
-    `id` varchar(50) not null,
-    `blog_id` varchar(50) not null,
-    `user_id` varchar(50) not null,
-    `user_name` varchar(50) not null,
-    `user_image` varchar(500) not null,
-    `content` mediumtext not null,
-    `create_id` real not null,
-    key `idx_created_at` (`created_at`),
-    primary key (`id`)
-) engine=innodb default charset=utf8;
-
+CREATE TABLE comments (
+  `id`         VARCHAR(50)  NOT NULL,
+  `blog_id`    VARCHAR(50)  NOT NULL,
+  `user_id`    VARCHAR(50)  NOT NULL,
+  `user_name`  VARCHAR(50)  NOT NULL,
+  `user_image` VARCHAR(500) NOT NULL,
+  `content`    MEDIUMTEXT   NOT NULL,
+  `created_at` REAL         NOT NULL,
+  KEY `idx_created_at` (`created_at`),
+  PRIMARY KEY (`id`)
+)
+  ENGINE = innodb
+  DEFAULT CHARSET = utf8;
